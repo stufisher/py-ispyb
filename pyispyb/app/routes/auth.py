@@ -24,7 +24,7 @@ import logging
 from flask import request, make_response
 import hashlib
 
-from flask_restx import Resource
+from flask_restx import Resource, fields as f_fields
 from pyispyb.app.extensions.api import api_v1, Namespace, legacy_api
 from pyispyb.app.extensions import auth_provider
 from pyispyb.app.extensions import db
@@ -63,10 +63,20 @@ def get_param(request, name):
     return res
 
 
+login_model = api_v1.model(
+    "LoginModel",
+    {
+        "plugin": f_fields.String(required=True),
+        "username": f_fields.String(required=True),
+        "password": f_fields.String(required=True),
+    },
+)
+
+
 @api.route("/login")
 @legacy_api.route("/authenticate")
 class Login(Resource):
-
+    @api.expect(login_model)
     def post(self):
         """Get authentication token for user.
 
@@ -92,15 +102,17 @@ class Login(Resource):
         else:
             token_info = auth_provider.generate_token(
                 username, groups, permissions)
-            token_ispyb = hashlib.sha1(
-                token_info["token"].encode('utf-8')).hexdigest()
-            bd_login = models.Login(
-                token=token_ispyb,
-                username=token_info["username"],
-                roles=json.dumps(token_info["groups"]),
-                expirationTime=datetime.datetime.strptime(
-                    token_info["exp"], "%Y-%m-%d %H:%M:%S"),
-            )
-            db.session.add(bd_login)
-            db.session.commit()
+
+            if plugin != "dummy":
+                token_ispyb = hashlib.sha1(
+                    token_info["token"].encode('utf-8')).hexdigest()
+                bd_login = models.Login(
+                    token=token_ispyb,
+                    username=token_info["username"],
+                    roles=json.dumps(token_info["groups"]),
+                    expirationTime=datetime.datetime.strptime(
+                        token_info["exp"], "%Y-%m-%d %H:%M:%S"),
+                )
+                db.session.add(bd_login)
+                db.session.commit()
             return token_info

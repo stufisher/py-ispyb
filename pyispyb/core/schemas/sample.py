@@ -28,6 +28,15 @@ from flask_restx import fields as f_fields
 from marshmallow_jsonschema import JSONSchema
 
 from pyispyb.app.extensions.api import api_v1 as api
+from .crystal import f_schema as crystal_schema
+
+sample_meta_schema = api.model(
+    "SampleMetadata",
+    {
+        "subsamples": f_fields.Integer(description="Number of sub samples"),
+        "datacollections": f_fields.Integer(description="Number of data collections"),
+    },
+)
 
 dict_schema = {
     'blSampleId': f_fields.Integer(required=True, description=''),
@@ -61,6 +70,8 @@ dict_schema = {
     'dimension3': f_fields.String(required=False, description=''),
     'shape': f_fields.String(required=False, description=''),
     'subLocation': f_fields.Integer(required=False, description='Indicates the samples location on a multi-sample pin, where 1 is closest to the pin base'),
+    'Crystal': f_fields.Nested(crystal_schema),
+    '_metadata': f_fields.Nested(sample_meta_schema)
 }
 
 

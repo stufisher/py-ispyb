@@ -3016,7 +3016,7 @@ class Person(db.Model):
     emailAddress = db.Column(db.String(60))
     phoneNumber = db.Column(db.String(45, 'utf8_unicode_ci'))
     login = db.Column(db.String(45), index=True)
-    passwd = db.Column(db.String(45))
+    # passwd = db.Column(db.String(45))
     faxNumber = db.Column(db.String(45))
     recordTimeStamp = db.Column(
         db.DateTime,

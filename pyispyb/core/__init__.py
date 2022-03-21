@@ -34,3 +34,7 @@ def init_app(app):
     routes.init_app(app)
 
     app.logger.info("ispyb-core loaded")
+
+    from . import new
+
+    new.init_app(app)

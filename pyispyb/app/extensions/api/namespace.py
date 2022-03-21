@@ -25,7 +25,7 @@ __license__ = "LGPLv3+"
 from functools import wraps
 import logging
 
-import flask_marshmallow
+# import flask_marshmallow
 
 from flask_restx import Namespace as BaseNamespace
 
@@ -73,8 +73,11 @@ class Namespace(BaseNamespace):
 
     def model(self, name=None, model=None, **kwargs):
         """Register a model aka schema / definition."""
-        if isinstance(model, flask_marshmallow.Schema) and not name:
-            name = model.__class__.__name__
-            if name.endswith("Schema"):
-                name = name[: -len("Schema")]
+        # if isinstance(model, flask_marshmallow.Schema) and not name:
+        #     name = model.__class__.__name__
+        #     if name.endswith("Schema"):
+        #         name = name[: -len("Schema")]
         return super(Namespace, self).model(name=name, model=model, **kwargs)
+
+    def marshal(self, *, input=None, output=None, responses=None):
+        pass

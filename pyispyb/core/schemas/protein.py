@@ -46,7 +46,7 @@ dict_schema = {
     'isCreatedBySampleSheet': f_fields.Integer(required=False, description=''),
     'externalId': f_fields.Integer(required=False, description=''),
     'componentTypeId': f_fields.Integer(required=False, description=''),
-    'modId': f_fields.String(required=False, description=''),
+    # 'modId': f_fields.String(required=False, description=''),
     'concentrationTypeId': f_fields.Integer(required=False, description=''),
     'Global': f_fields.Integer(required=False, description=''),
 }

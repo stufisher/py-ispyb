@@ -6,6 +6,7 @@ from flask_restx._http import HTTPStatus
 from pyispyb.app.extensions.auth import auth_provider
 from pyispyb.core.modules.proposal import find_proposal_id, login_authorized_for_proposal
 from pyispyb.core.modules.session import login_authorized_for_session
+from pyispyb.core import models
 
 
 def authentication_required(func):
@@ -18,8 +19,12 @@ def authentication_required(func):
         request.user = user_info
         if not user_info:
             return {"message": msg}, HTTPStatus.UNAUTHORIZED
-        else:
-            return func(*args, **kwargs)
+
+        request.person = models.Person.query.filter_by(login=user_info["username"]).first()
+        if not request.person:
+            return {"message": "User does not exist in database"}, HTTPStatus.UNAUTHORIZED
+
+        return func(*args, **kwargs)
 
     return decorated
 

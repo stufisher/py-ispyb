@@ -28,6 +28,7 @@ from flask_restx import fields as f_fields
 from marshmallow_jsonschema import JSONSchema
 
 from pyispyb.app.extensions.api import api_v1 as api
+from .protein import f_schema as protein_schema
 
 dict_schema = {
     'crystalId': f_fields.Integer(required=True, description=''),
@@ -52,7 +53,8 @@ dict_schema = {
     'pdbFilePath': f_fields.String(required=False, description='pdb file path'),
     'recordTimeStamp': f_fields.DateTime(required=True, description='Creation or last update date/time'),
     'abundance': f_fields.Float(required=False, description=''),
-    'packingFraction': f_fields.Float(required=False, description=''),
+    # 'packingFraction': f_fields.Float(required=False, description=''),
+    'Protein': f_fields.Nested(protein_schema)
 }
 
 

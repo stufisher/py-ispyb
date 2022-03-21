@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU Lesser General Public License
 # along with py-ispyb. If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Any
 
 from .flask_sqlalchemy import SQLAlchemy
 from .auth import auth_provider
@@ -32,8 +33,20 @@ from pyispyb.app.extensions.logging import Logging
 
 logging = Logging()
 
+from flask_sqlalchemy.model import Model
+from sqlalchemy.ext.declarative import declarative_base
 
-db = SQLAlchemy()
+
+class CustomBase(Model):
+    @property
+    def _metadata(self) -> dict[str, Any]:
+        if not hasattr(self, "_additional_metadata"):
+            self._additional_metadata: dict[str, Any] = {}
+        return self._additional_metadata
+
+
+db = SQLAlchemy(model_class=declarative_base(cls=CustomBase, name="Model"))
+
 db.ENUM = ENUM
 db.LONGBLOB = LONGBLOB
 
