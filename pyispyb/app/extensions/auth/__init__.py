@@ -106,7 +106,7 @@ class AuthProvider:
             token = parts[1]
         else:
             # NO AUTH HEADER -> TOKEN IS IN PARAMS (LEGACY ROUTES)
-            token = request.view_args["token"]
+            token = request.view_args.get("token")
 
         if not token:
             return None, "Authorization header is expected"
