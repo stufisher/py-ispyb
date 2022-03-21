@@ -31,8 +31,8 @@ api = Namespace(
 class Samples(Resource):
     @api.expect(parser)
     @api.marshal_with(paginated(sample_schema.f_schema), code=HTTPStatus.OK)
-    def get(self, **kwargs):
-        """Get data collection groups for session."""
+    def get(self):
+        """Get available samples."""
         print("user", request.user)
         args = parser.parse_args()
         samples = crud.get_samples(
@@ -46,8 +46,8 @@ class Samples(Resource):
 class Sample(Resource):
     @api.marshal_with(paginated(sample_schema.f_schema), code=HTTPStatus.OK)
     @api.response(404, "No such sample", error_model)
-    def get(self, blSampleId, **kwargs):
-        """Get data collection groups for session."""
+    def get(self, blSampleId: int):
+        """Get a single sample."""
         samples = crud.get_samples(
             0, 10, personId=request.user.personId, blSampleId=blSampleId
         )
@@ -57,9 +57,9 @@ class Sample(Resource):
             return {"message": "No such sample"}, 404
 
 
-def register_class(route_class, api, path):
+def register_class(route_class: Resource, api: Namespace, path: str):
     """Automatically decorate class
-    
+
     Automatically applies:
         * security
         * doc string from __doc__

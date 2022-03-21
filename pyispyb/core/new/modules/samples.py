@@ -1,5 +1,6 @@
-from typing import Optional
+from typing import Optional, Any
 from flask import request
+import sqlalchemy
 from sqlalchemy.orm import contains_eager
 from sqlalchemy.sql.expression import func, distinct
 
@@ -8,9 +9,9 @@ from ....core import models
 from ..database.utils import Paged, page, with_metadata
 
 
-def with_auth_to_session(query, column):
+def with_auth_to_session(query: "sqlalchemy.orm.Query[Any]", column: "sqlalchemy.Column[Any]"):
     """Join relevant tables to authorise right through to SessionHasPerson
-    
+
     in case of not being admin, can be reused"""
     return (
         query.join(models.Proposal, column == models.Proposal.proposalId)
