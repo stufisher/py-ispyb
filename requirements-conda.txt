@@ -1,0 +1,15 @@
+# marshmallow_jsonschema
+black
+flake8
+flask
+flask-cors
+flask-sqlalchemy
+markupsafe==2.0.1
+marshmallow
+mysql-connector-python 
+pydantic
+pyjwt
+requests
+ruamel.yaml
+sqlalchemy
+sqlparse
