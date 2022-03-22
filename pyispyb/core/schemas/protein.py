@@ -22,18 +22,18 @@ along with py-ispyb. If not, see <http://www.gnu.org/licenses/>.
 
 __license__ = "LGPLv3+"
 
-
 from marshmallow import Schema, fields as ma_fields
 from flask_restx import fields as f_fields
 from marshmallow_jsonschema import JSONSchema
 
 from pyispyb.app.extensions.api import api_v1 as api
+from .utils import Regex
 
 dict_schema = {
     'proteinId': f_fields.Integer(required=True, description=''),
     'proposalId': f_fields.Integer(required=True, description=''),
     'name': f_fields.String(required=False, description=''),
-    'acronym': f_fields.String(required=False, description=''),
+    'acronym': Regex(required=False, description='', pattern=r"^\w+$"),
     'description': f_fields.String(required=False, description='A description/summary using words and sentences'),
     'hazardGroup': f_fields.Integer(required=True, description='A.k.a. risk group'),
     'containmentLevel': f_fields.Integer(required=True, description='A.k.a. biosafety level, which indicates the level of containment required'),
