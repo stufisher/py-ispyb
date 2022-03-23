@@ -33,7 +33,7 @@ dict_schema = {
     'proteinId': f_fields.Integer(required=True, description=''),
     'proposalId': f_fields.Integer(required=True, description=''),
     'name': f_fields.String(required=False, description=''),
-    'acronym': Regex(required=False, description='', pattern=r"^\w+$"),
+    'acronym': Regex(required=False, description='', pattern=r"^[\w-]+$"),
     'description': f_fields.String(required=False, description='A description/summary using words and sentences'),
     'hazardGroup': f_fields.Integer(required=True, description='A.k.a. risk group'),
     'containmentLevel': f_fields.Integer(required=True, description='A.k.a. biosafety level, which indicates the level of containment required'),
