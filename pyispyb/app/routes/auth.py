@@ -96,9 +96,17 @@ class Login(Resource):
 
         if not username:
             return make_response(
-                "Could not verify",
+                {"message": "Could not verify"},
                 401,
             )
+
+        request.person = models.Person.query.filter_by(login=username).first()
+        if not request.person:
+            return make_response(
+                {"message": "User does not exist in database"},
+                401,
+            )
+
         else:
             token_info = auth_provider.generate_token(
                 username, groups, permissions)

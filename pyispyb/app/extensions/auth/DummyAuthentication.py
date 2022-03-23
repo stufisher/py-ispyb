@@ -41,6 +41,9 @@ class DummyAuthentication(AbstractAuthentication):
         if not username:
             return None, None, None
 
+        if username == "bad":
+            return None, None, None
+
         permissions = []
         if password:
             permissions = password.split(",")
