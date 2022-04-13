@@ -1,18 +1,23 @@
-def get_token(app, permissions, user="test"):
-    client = app.test_client()
-    api_root = app.config["API_ROOT"]
 
-    response = client.post(
-        api_root + "/auth/login", headers={
+
+import json
+
+from fastapi.testclient import TestClient
+
+
+def get_token(app: TestClient, permissions, api_root, user="test"):
+
+    response = app.post(
+        api_root + "/auth/login", data=json.dumps({
             "plugin": "dummy",
             "username": user,
             "password": ",".join(permissions)
-        }
+        })
     )
-    return response.json["token"]
+    return response.json()["token"]
 
 
-def get_all_permissions_token(app, user="test"):
+def get_all_permissions_token(app, api_root, user="test"):
     return get_token(app, [
         'own_proposals',
         'all_proposals',
@@ -21,7 +26,7 @@ def get_all_permissions_token(app, user="test"):
         'write_proposals',
         "write_sessions",
         'manager',
-    ], user=user)
+    ], api_root=api_root, user=user)
 
 
 def clean_db(db_module):

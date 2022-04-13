@@ -1,6 +1,5 @@
 from fastapi import HTTPException, Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from pyispyb.app.extensions.database.definitions import get_current_person
 from pyispyb.app.globals import g
 import jwt
 
@@ -34,15 +33,56 @@ async def JWTBearer(
                 status_code=401, detail="Invalid token or expired token."
             )
 
-        g.login = decoded["username"]
-        person = get_current_person()
-        if not person:
-            raise HTTPException(
-                status_code=401, detail="User does not exist in database."
-            )
-        g.person = person
-        g.permissions = person._metadata["permissions"]
+        g.username = decoded["username"]
+        g.permissions = decoded["permissions"]
+        g.groups = decoded["groups"]
 
         return credentials.credentials
     else:
         raise HTTPException(status_code=401, detail="No token provided.")
+
+
+def permission_required(operator, permissions):
+    """Make the route only accesible to users with the specified permissions.
+
+    Args:
+        operator (str): any or all
+        permissions (str[]): permissions required
+    """
+    operator = operator.lower()
+    if operator != "any" and operator != "all":
+        raise Exception("operator must be 'any' or 'all'.")
+
+    async def res():
+
+        user_permissions: list[str] = g.permissions
+        if user_permissions is None:
+            user_permissions = []
+
+        if (
+            (
+                operator == "any" and (
+                    "all" in permissions or any(
+                        permission in list(permissions) for permission in list(user_permissions)
+                    )
+                )
+            ) or (
+                operator == "all" and (
+                            all(
+                                permission in list(permissions) for permission in list(user_permissions)
+                            )
+                )
+            )
+        ):
+            return user_permissions
+        else:
+            msg = "User %s (permissions assigned: %s) has no appropriate permission (%s: %s) " % (
+                g.username,
+                str(user_permissions),
+                operator,
+                str(permissions),
+            )
+            msg += " to execute method."
+            raise HTTPException(status_code=401, detail=msg)
+
+    return res

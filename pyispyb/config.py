@@ -28,29 +28,44 @@ import os
 
 from functools import lru_cache
 from pydantic import BaseSettings, BaseModel
+import yaml
 
 
 PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
 RESOURCES_ROOT = os.path.join(PROJECT_ROOT, "resources")
+
+yaml_settings = dict()
+AUTH_CONFIG = os.path.realpath(os.path.join(PROJECT_ROOT, "..", os.getenv("ISPYB_AUTH", "auth.yml")))
+try:
+    with open(AUTH_CONFIG) as f:
+        yaml_settings.update(yaml.load(f, Loader=yaml.FullLoader))
+except IOError:
+    raise Exception(f"Could not access auth config: {AUTH_CONFIG}")
+
+
+def get_env(name: str):
+    res = os.getenv(name, None)
+    if res is None or res == '':
+        raise Exception(f"You must define env variable {name}")
+    else:
+        return res
 
 
 class Settings(BaseSettings):
     static_root: str = os.path.join(PROJECT_ROOT, "static")
     queries_dir: str = os.path.join(RESOURCES_ROOT, "queries")
 
-    api_root: str = "/ispyb/api/v1"
-    site_name: str = "Generic"
+    api_root: str
     service_name: str
 
-    sqlalchemy_database_uri: str
-    query_debug: bool = False
+    sqlalchemy_database_uri: str = get_env("SQLALCHEMY_DATABASE_URI")
+    query_debug: bool
 
-    auth_module: str
-    auth_class: str
+    auth = yaml_settings['AUTH']
 
-    jwt_coding_algorithm: str = "HS256"
-    token_exp_time: int = 300  # in minutes
-    secret_key: str
+    jwt_coding_algorithm: str
+    token_exp_time: int  # in minutes
+    secret_key: str = get_env("SECRET_KEY")
 
     cors: bool = False
 
