@@ -25,8 +25,6 @@ engine = sqlalchemy.create_engine(
 
 _session = sqlalchemy.orm.sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-Base.metadata.create_all(bind=engine)  # type: ignore
-
 
 def get_session() -> Generator[sqlalchemy.orm.Session, Any, None]:
     session = _session()
